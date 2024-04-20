@@ -1,8 +1,11 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -66,8 +69,6 @@ const users = {
   const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
 
-  
-
   app.get("/users/:id", (req, res) => {
     const id = req.params["id"]; //or req.params.id
     let result = findUserById(id);
@@ -78,15 +79,20 @@ const users = {
     }
   });
 
+  const generateId = () => {
+    return Math.random().toString(36).substr(2, 9);
+  };
+
   const addUser = (user) => {
-    users["users_list"].push(user);
+    user.id = generateId();
+    users.users_list.push(user);
     return user;
   };
   
   app.post("/users", (req, res) => {
     const userToAdd = req.body;
-    addUser(userToAdd);
-    res.send();
+    const newUser = addUser(userToAdd);
+    res.status(201).json(newUser);
   });  
 
   const deleteUserById = (id) => {
@@ -102,7 +108,7 @@ const users = {
     const id = req.params.id;
     const deleted = deleteUserById(id);
     if (deleted) {
-      res.status(200).send(`User with ID ${id} deleted.`);
+      res.status(204).send();
     } else {
       res.status(404).send("User not found.");
     }
