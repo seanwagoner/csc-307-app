@@ -25,7 +25,7 @@ function MyApp() {
           }
         })
         .then(newUser => {
-          setCharacters(characters => [...characters, newUser]); 
+          setCharacters(characters => [...characters, { ...newUser, id: newUser._id }]);
         })
         .catch((error) => {
           console.log(error);
@@ -34,8 +34,8 @@ function MyApp() {
     
     function removeOneCharacter(index) {
       const user = characters[index];
-      if (user && user.id) {
-        fetch(`http://localhost:8000/users/${user.id}`, {
+      if (user && user._id) {
+        fetch(`http://localhost:8000/users/${user._id}`, {
           method: 'DELETE'
         })
         .then(response => {
